@@ -31,11 +31,27 @@ class ResizeController extends Controller
         // Make Intervention substance
         $imgFile = Image::make($image->getRealPath());
 
+
+        //resize the height to fit within the frame
+        $imgFile->resize(null, 1280, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+
         //Inserting frame on the center of the image
         $imgFile->insert('frame.png', 'center');
 
         //Saving edited image
         $imgFile->save($destinationPath."/".$input['file']);
+
+        //Trying Canvas
+        $destinationPath = 'canvas';
+        $canvas = Image::make($image->getRealPath());
+        $canvas->resize(null, 1280, function ($constraint) {
+                    $constraint->aspectRatio();
+                })
+                ->crop(720, 1280)
+                ->insert('frame.png', 'center');
+        $canvas->save($destinationPath."/".$input['file']);
 
         //Addressing new storage for the original image
         $destinationPath = public_path('/uploads');
